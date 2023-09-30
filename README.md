@@ -1,12 +1,11 @@
-# 4A00EZ62 Backend-kehitys
-## Backend Development - Final Project
+# Expense Tracker
 
-## Topic
-### General Project
-Most of us want to know where our money goes. You now have the chance to create a solution to that question. Create an application for tracking your personal expenses.
+The applicaiton is for tracking your expenses.
 
-**OR**
+## Project motivation
 
-### Fantasy Project
-Like fantasy pizza, you can decide your own final project concept. 
-The idea must be approved by the teacher (DM the idea in ::slack:Slack).
+This is the final project for the Backend Development course in TAMK (Tampere University of Applied Sciences). The course was instructed by Louis Botha.
+
+## REST API
+
+The application has REST API that it uses to record, edit and view data. The API is documented to `swagger.yml` file.
