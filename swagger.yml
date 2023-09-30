@@ -1,0 +1,367 @@
+openapi: "3.0.3"
+info:
+  title: Expense Tracker API
+  description: This is the REST API documentation for the Expense Tracker
+  version: "1.0"
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://localhost/api/
+    description: Localhost
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Expense:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          readOnly: true
+          description: Expense id
+        recipient:
+          type: string
+          description: Expense recipient
+        description:
+          type: string
+          description: Expense description
+        category:
+          type: string
+          description: Expense category
+        amount:
+          type: number
+          format: float
+          description: Expense amount
+        date:
+          type: string
+          format: date
+          description: Expense date
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          readOnly: true
+          description: Category id
+        name:
+          type: string
+          description: Category name
+        description:
+          type: string
+          description: Category description
+        icon:
+          type: string
+          description: Category icon
+        color:
+          type: string
+          description: Category color
+
+  parameters:
+    offset:
+      name: offset
+      in: query
+      description: Offset the results
+      required: false
+      schema:
+        type: integer
+        default: 0
+    limit:
+      name: limit
+      in: query
+      description: Limit the number of results
+      required: false
+      schema:
+        type: integer
+        default: 20
+        minimum: 5
+        maximum: 100
+    sort:
+      name: sort
+      in: query
+      description: Sort by field
+      required: false
+      schema:
+        type: string
+    order:
+      name: order
+      in: query
+      description: Sort order (asc/desc)
+      required: false
+      schema:
+        type: string
+        enum: [asc, desc]
+    description:
+      name: description
+      in: query
+      description: Filter by description (contains/keyword)
+      required: false
+      schema:
+        type: string
+paths:
+  /expenses:
+    get:
+      description: Get all expenses
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: No expenses found (empty database).
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+      parameters:
+        - name: amountFrom
+          in: query
+          description: Filter by amount from
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: amountTo
+          in: query
+          description: Filter by amount to
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: dateFrom
+          in: query
+          description: Filter by date from
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: Filter by date to
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: category
+          in: query
+          description: Filter by category
+          required: false
+          schema:
+            type: integer
+        - name: recipient
+          in: query
+          description: Filter by recipient (contains/keyword)
+          required: false
+          schema:
+            type: string
+        - $ref: "#/components/parameters/description"
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/order"
+    post:
+      description: Create a new expense
+      responses:
+        "200":
+          description: List of expenses
+          links:
+            Expense:
+              operationId: getExpenseById
+              parameters:
+                id: "$response.body#/id"
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Expense"
+
+  /expenses/{id}:
+    get:
+      description: Get an expense by id
+      operationId: getExpenseById
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Expense not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+    put:
+      description: Update an expense
+      operationId: updateExpense
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Expense not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Expense"
+    delete:
+      operationId: deleteExpense
+      description: Delete an expense by id
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Expense not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+
+  /categories:
+    get:
+      description: Get all categories
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: No categories found (empty database).
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Categories
+      parameters:
+        - name: name
+          in: query
+          description: Filter by name
+          required: false
+          schema:
+            type: string
+        - $ref: "#/components/parameters/description"
+        - $ref: "#/components/parameters/offset"
+        - $ref: "#/components/parameters/limit"
+        - $ref: "#/components/parameters/sort"
+        - $ref: "#/components/parameters/order"
+    post:
+      description: Create a new category
+      responses:
+        "200":
+          description: Request successful
+          links:
+            Category:
+              operationId: getCategoryById
+              parameters:
+                id: "$response.body#/id"
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+  /categories{id}:
+    get:
+      description: Get a category by id
+      operationId: getCategoryById
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Category not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Categories
+    put:
+      description: Update a category
+      operationId: updateCategory
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Category not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Categories
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Category"
+    delete:
+      operationId: deleteCategory
+      description: Delete a category by id
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Category not found.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Categories
