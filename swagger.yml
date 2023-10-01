@@ -304,7 +304,8 @@ paths:
         - $ref: "#/components/parameters/sort"
         - $ref: "#/components/parameters/order"
     post:
-      description: Create a new category
+      summary: Create a new category
+      description: Creates a new category in the database with provided data
       responses:
         "200":
           description: Request successful
