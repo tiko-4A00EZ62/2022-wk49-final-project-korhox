@@ -2,6 +2,8 @@
 
 This is the final project for the 2022 backend course. The project is a simple web application and REST API for tracking your expenses.
 
+<img src="./docs/assets/screenshot.png" style=""/>
+
 <details>
   <summary>Table of Contents</summary>
 
