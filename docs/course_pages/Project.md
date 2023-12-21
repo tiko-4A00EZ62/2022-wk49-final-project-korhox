@@ -26,7 +26,7 @@ The idea must be approved by the teacher (DM the idea in ::slack:Slack).
     - [x] Instructions for running the application locally
       - [x] Node instructions
       - [x] SQL statements for creating and adding default data
-    - [ ] **Project self evaluation, use project evaluation criteria (see *Evaluation* section)**
+    - [x] Project self evaluation, use project evaluation criteria (see *Evaluation* section)
 - [x] A REST API for creating and maintaining a list of expenses written with Node, Express and MySQL.
 - [ ] **Integration tests (SuperTest) for the main API endpoints.**
 - [x] OpenAPI/Swagger documentation for API.

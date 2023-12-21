@@ -67,8 +67,6 @@ For each criteria that is met, the rating can be added to the final score
 
 ## % Total = 83%
 
-83 %
-
 ## Scale
 
     50% - 59%  : 1
