@@ -1,0 +1,7 @@
+### Generate random data
+
+GET http://localhost:3000/api/expenses/generate
+
+### Generate multiple random data at once
+
+GET http://localhost:3000/api/expenses/generate?count=182

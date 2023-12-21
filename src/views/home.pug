@@ -1,0 +1,128 @@
+extends includes/head.pug
+
+block content
+  .container-sm
+    .d-flex.py-4.gap-4
+      img(src="/img/logo.svg" alt="Logo" width=200).me-5
+      div.d-flex.justify-content-end.align-items-center.gap-3.flex-grow-1
+        div.bg-light.p-2.px-3.rounded.text-end.flex-grow-1
+          p.m-0 This year
+          h2#summaryThisYear.m-0 0 €
+        div.bg-light.p-2.px-3.rounded.text-end.flex-grow-1
+          p.m-0 Last month
+          h2#summaryLastMonth.m-0 0 €
+        div.bg-light.p-2.px-3.rounded.text-end.flex-grow-1
+          p.m-0 This month
+          h2#summaryMonth.m-0 0 €
+        div.bg-light.p-2.px-3.rounded.text-end.flex-grow-1
+          p.m-0 This search
+          h2#summarySearch.m-0 0 €
+    .d-flex.gap-3.justify-content-between.bg-light.rounded.mb-4.p-4
+      .d-flex.gap-3
+        .btn.btn-success(onclick="addExpense()").d-flex.align-items-center.gap-1
+          i.fa-solid.fa-plus.fa-fw
+          span Add Expense
+      .d-flex.gap-3
+        #filterToggle(style="display:flex").gap-3
+          button(onclick="startSearch();").btn.btn-primary
+            i.fa-solid.fa-fw.fa-search.me-1
+            span Search
+          button(onclick="startFilter();").btn.btn-primary
+            i.fa-solid.fa-fw.fa-filter.me-1
+            span Sort and Filter
+          button(onclick="startAmount();").btn.btn-primary
+            i.fa-solid.fa-fw.fa-euro-sign.me-1
+            span Amount Filter
+          button(onclick="startDate();").btn.btn-primary
+            i.fa-solid.fa-fw.fa-calendar.me-1
+            span Date Filter
+        #searchForm(style="display:none").gap-3
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-receipt
+            input#searchRecipient(type="text" placeholder="Recipient" onkeyup="refreshTable()").form-control
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-quote-right
+            input#searchDescription(type="text" placeholder="Description" onkeyup="refreshTable()").form-control
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-tag
+            input#searchCategory(type="text" placeholder="Category" onkeyup="refreshTable()").form-control
+          button(onclick="closeForm();").btn.btn-secondary.d-flex.align-items-center.gap-1
+            i.fa-solid.fa-fw.fa-times
+            span Close
+        #filterForm(style="display:none").gap-3
+          .input-group
+            select(onchange="refreshTable()")#sort.form-select
+              option(value="date" selected) Date
+              option(value="recipient") Recipient
+              option(value="description") Description
+              option(value="category") Category
+              option(value="amount") Amount
+              option(value="id") Added (ID)
+            input.btn-check#sortDirection(type="checkbox")
+            label.btn.btn-secondary(for="sortDirection")
+              i#desc.fa-solid.fa-fw.fa-sort-amount-up
+              i(style="display:none;")#asc.fa-solid.fa-fw.fa-sort-amount-down-alt
+          div
+            button(onclick="closeForm();").btn.btn-secondary.d-flex.align-items-center.gap-1
+              i.fa-solid.fa-fw.fa-times
+              span Close
+        #amountForm(style="display:none").gap-3
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-dollar-sign
+            input#searchAmountMin(type="number" placeholder="Min" onkeyup="refreshTable()").form-control
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-minus
+            input#searchAmountMax(type="number" placeholder="Max" onkeyup="refreshTable()").form-control
+          div
+            button(onclick="closeForm();").btn.btn-secondary.d-flex.align-items-center.gap-1
+              i.fa-solid.fa-fw.fa-times
+              span Close
+        #dateForm(style="display:none").gap-3
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-calendar
+            input#searchDateMin(type="date" placeholder="Min" onchange="refreshTable()").form-control
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-minus
+            input#searchDateMax(type="date" placeholder="Max" onchange="refreshTable()").form-control
+          div
+            button(onclick="closeForm();").btn.btn-secondary.d-flex.align-items-center.gap-1
+              i.fa-solid.fa-fw.fa-times
+              span Close
+    table#expenses.table.table-striped.table-hover
+      thead
+        tr
+          th Recipient
+          th Description
+          th Category
+          th.text-end Amount
+          th.text-end Date
+          th.text-end Actions
+      tbody
+    .d-flex.gap-3.bg-light.rounded.mb-4.p-4
+      div.d-flex.gap-3
+        div
+          .input-group
+            button(disabled onclick="prevPage();").btn.btn-secondary#prevButton
+              i.fa-solid.fa-fw.fa-angle-left
+            input(type="number" min="1" max="10" value="1" style="min-width:30px;" onkeyup="refreshTable()")#pageNumber.form-control.text-center.no-spin-button
+            span.input-group-text of
+              span#totalPages.ps-1 1
+            button(onclick="nextPage();").btn.btn-secondary#nextButton
+              i.fa-solid.fa-fw.fa-angle-right
+        div
+          .input-group
+            span.input-group-text
+              i.fa-solid.fa-fw.fa-eye
+            select(onchange="refreshTable()")#pageSize.form-select
+              option(value="5") 5
+              option(value="10" selected) 10
+              option(value="25") 25
+              option(value="50") 50
+              option(value="100") 100
+            span.input-group-text of
+              span#totalEntries.ps-1 0

@@ -1,0 +1,23 @@
+### Get all expenses during last month
+
+GET http://localhost:3000/api/expenses/last/1 month
+
+### Get all expenses during last year
+
+GET http://localhost:3000/api/expenses/last/1 year
+
+### Get all expenses during last week
+
+GET http://localhost:3000/api/expenses/last/1 week
+
+### Get all expenses during last day
+
+GET http://localhost:3000/api/expenses/last/1 day
+
+### Get all expenses last february
+
+GET http://localhost:3000/api/expenses/last/february
+
+### Get all expenses last three months
+
+GET http://localhost:3000/api/expenses/last/1 month

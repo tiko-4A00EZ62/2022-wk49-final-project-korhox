@@ -1,0 +1,32 @@
+{
+  "name": "2022-wk49-final-project-korhox",
+  "version": "1.0.0",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "test": "jest --forceExit"
+  },
+  "devDependencies": {
+    "bun-types": "latest",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "body-parser": "^1.20.2",
+    "bootstrap": "^5.3.2",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "install": "^0.13.0",
+    "knex": "^3.1.0",
+    "moment": "^2.29.4",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "pug": "^3.0.2"
+  }
+}

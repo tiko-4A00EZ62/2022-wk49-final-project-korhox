@@ -10,10 +10,6 @@ servers:
   - url: https://localhost/api/
     description: Localhost
 components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
   schemas:
     Expense:
       type: object
@@ -41,27 +37,6 @@ components:
           type: string
           format: date
           description: Expense date
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          minimum: 1
-          readOnly: true
-          description: Category id
-        name:
-          type: string
-          description: Category name
-        description:
-          type: string
-          description: Category description
-        icon:
-          type: string
-          description: Category icon
-        color:
-          type: string
-          description: Category color
 
   parameters:
     id:
@@ -113,6 +88,53 @@ components:
       schema:
         type: string
         enum: [asc, desc]
+    amountFrom:
+      name: amountFrom
+      in: query
+      description: Filter by amount from
+      required: false
+      schema:
+        type: number
+        format: float
+    amountTo:
+      name: amountTo
+      in: query
+      description: Filter by amount to
+      required: false
+      schema:
+        type: number
+        format: float
+    dateFrom:
+      name: dateFrom
+      in: query
+      description: Filter by date from
+      required: false
+      schema:
+        type: string
+        format: date
+    dateTo:
+      name: dateTo
+      in: query
+      description: Filter by date to
+      required: false
+      schema:
+        type: string
+        format: date
+    category:
+      name: category
+      in: query
+      description: Filter by category
+      required: false
+      schema:
+        type: integer
+    recipient:
+      name: recipient
+      in: query
+      description: Filter by recipient (contains/keyword)
+      required: false
+      schema:
+        type: string
+
 paths:
   /expenses:
     get:
@@ -138,47 +160,15 @@ paths:
       tags:
         - Expenses
       parameters:
-        - name: amountFrom
-          in: query
-          description: Filter by amount from
-          required: false
-          schema:
-            type: number
-            format: float
-        - name: amountTo
-          in: query
-          description: Filter by amount to
-          required: false
-          schema:
-            type: number
-            format: float
-        - name: dateFrom
-          in: query
-          description: Filter by date from
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: dateTo
-          in: query
-          description: Filter by date to
-          required: false
-          schema:
-            type: string
-            format: date
-        - name: category
-          in: query
-          description: Filter by category
-          required: false
-          schema:
-            type: integer
-        - name: recipient
-          in: query
-          description: Filter by recipient (contains/keyword)
-          required: false
-          schema:
-            type: string
+        - $ref: "#/components/parameters/category"
+        - $ref: "#/components/parameters/recipient"
         - $ref: "#/components/parameters/description"
+
+        - $ref: "#/components/parameters/amountFrom"
+        - $ref: "#/components/parameters/amountTo"
+        - $ref: "#/components/parameters/dateFrom"
+        - $ref: "#/components/parameters/dateTo"
+
         - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/limit"
         - $ref: "#/components/parameters/sort"
@@ -230,6 +220,75 @@ paths:
             schema:
               $ref: "#/components/schemas/Expense"
 
+  /expenses/last/{period}:
+    get:
+      summary: Get last expenses by period
+      description: Gets last expenses from the database by period
+      operationId: getLastExpenses
+      parameters:
+        - name: period
+          in: path
+          description: >
+            Period of time. Examples: <br />
+            - 1 day <br />
+            - 3 days <br />
+            - x week(s) <br />
+            - x month(s) <br />
+            - x year(s) <br />
+            - january <br />
+            - 2019-febuary <br />
+            - 2019-march <br />
+            - 2019 <br />
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: "#/components/schemas/Expense"
+        "400":
+          description: Invalid parameter. Usually means that period is not one of the allowed values.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: No expenses found (empty database).
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+
+  /expenses/generate:
+    post:
+      summary: Create random expense (for testing purposes)
+      description: Generates random expenses in the database
+      operationId: generateExpenses
+      parameters:
+        - name: count
+          in: query
+          description: Number of expenses to generate
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 1000
+      responses:
+        "200":
+          description: Request successful
+        "400":
+          description: Invalid parameter.
+        "401":
+          description: Authorization information is missing or invalid.
+        "5XX":
+          description: Unexpected error.
+      tags:
+        - Expenses
+
   /expenses/{id}:
     get:
       summary: Get an expense by id
@@ -273,123 +332,3 @@ paths:
           description: Unexpected error.
       tags:
         - Expenses
-
-  /categories:
-    get:
-      summary: Get all categories
-      description: Gets all categories from the database with provided filters
-      responses:
-        "200":
-          description: Request successful
-        "400":
-          description: Invalid parameter.
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: No categories found (empty database).
-        "5XX":
-          description: Unexpected error.
-      tags:
-        - Categories
-      parameters:
-        - name: name
-          in: query
-          description: Filter by name
-          required: false
-          schema:
-            type: string
-        - $ref: "#/components/parameters/description"
-        - $ref: "#/components/parameters/offset"
-        - $ref: "#/components/parameters/limit"
-        - $ref: "#/components/parameters/sort"
-        - $ref: "#/components/parameters/order"
-    post:
-      summary: Create a new category
-      description: Creates a new category in the database with provided data
-      responses:
-        "200":
-          description: Request successful
-          links:
-            Category:
-              operationId: getCategoryById
-              parameters:
-                id: "$response.body#/id"
-        "400":
-          description: Invalid parameter.
-        "401":
-          description: Authorization information is missing or invalid.
-        "5XX":
-          description: Unexpected error.
-      tags:
-        - Categories
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Category"
-    put:
-      summary: Update a category
-      description: Updates a category in the database with provided data
-      operationId: updateCategory
-      responses:
-        "200":
-          description: Request successful
-        "400":
-          description: Invalid parameter.
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Category not found.
-        "5XX":
-          description: Unexpected error.
-      tags:
-        - Categories
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Category"
-
-  /categories{id}:
-    get:
-      summary: Get a category by id
-      description: Gets a category from the database by id
-      operationId: getCategoryById
-      parameters:
-        - $ref: "#/components/parameters/id"
-      responses:
-        "200":
-          description: Request successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Category"
-        "400":
-          description: Invalid parameter.
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Category not found.
-        "5XX":
-          description: Unexpected error.
-      tags:
-        - Categories
-    delete:
-      summary: Delete a category by id
-      description: Deletes a category from the database by id
-      operationId: deleteCategory
-      parameters:
-        - $ref: "#/components/parameters/id"
-      responses:
-        "200":
-          description: Request successful
-        "400":
-          description: Invalid parameter.
-        "401":
-          description: Authorization information is missing or invalid.
-        "404":
-          description: Category not found.
-        "5XX":
-          description: Unexpected error.
-      tags:
-        - Categories
